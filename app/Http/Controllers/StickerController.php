@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Sticker;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+
+class StickerController extends Controller
+{
+    public function show() {
+        $stickers = Sticker::all();
+
+        return Inertia::render('Stickers', [
+            'stickers' => $stickers,
+        ]);
+    }
+
+    public function embed() {
+        $stickers = Sticker::all();
+
+        return Inertia::render('StickersEmbed', [
+            'stickers' => $stickers,
+        ]);
+    }
+
+    public function create(Request $request) {
+        $validated = $request->validate([
+            'lat' => ['required', 'numeric', 'min:-90', 'max:90'],
+            'lng' => ['required', 'numeric', 'min:-180', 'max:180'],
+        ]);
+
+        $sticker = new Sticker([
+            'latitude' => $validated['lat'],
+            'longitude' => $validated['lng'],
+        ]);
+        $sticker->user()->associate(Auth::user());
+        $sticker->save();
+
+        return to_route('stickers.show');
+    }
+
+    public function delete(Sticker $sticker) {
+        if ($sticker->user != Auth::user()) abort(403, 'Jij hebt deze sticker niet geplakt');
+        $sticker->delete();
+        return to_route('stickers.show');
+    }
+}
