@@ -151,7 +151,7 @@ const showingNavigationDropdown = ref(false);
                 </div>
             </nav>
             <!-- Page Content -->
-            <main class="grow">
+            <main class="grow flex flex-cols">
                 <slot />
             </main>
         </div>

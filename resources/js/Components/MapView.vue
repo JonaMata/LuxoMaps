@@ -21,6 +21,8 @@ let map : LeafletMap;
 let locationMarker : Marker, accuracyCircle : Circle, curLocGroup : FeatureGroup
 let currentLocation = ref()
 
+let shouldPan = false;
+
 //Define LuxoIcon
 const LuxoIcon = new L.Icon({
     iconUrl: '/luxomarker.png',
@@ -129,7 +131,11 @@ function updateCurrentPosition(location : GeolocationPosition) {
     locationMarker.setLatLng(latLng)
     accuracyCircle.setLatLng(latLng).setRadius(location.coords.accuracy)
     curLocGroup.addTo(map)
-    map.panTo(latLng)
+
+    if (shouldPan) {
+        map.flyToBounds(accuracyCircle.getBounds())
+        shouldPan = false
+    }
 
 
     if (!trackLocation.value) return
@@ -141,10 +147,12 @@ async function toggleLocation() {
         const result = await navigator.permissions.query({name: 'geolocation'})
         if (result.state === 'granted') {
             trackLocation.value = true
+            shouldPan = true
             navigator.geolocation.getCurrentPosition(updateCurrentPosition)
         } else if (result.state === 'prompt') {
             navigator.geolocation.getCurrentPosition((position) => {
                 trackLocation.value = true
+                shouldPan = true
                 updateCurrentPosition(position)
             })
         }
@@ -159,8 +167,8 @@ async function toggleLocation() {
 </script>
 
 <template>
-    <div class="absolute w-full h-full">
-        <div id="map"></div>
+    <div class="relative grow flex flex-col">
+        <div id="map" class="grow"></div>
         <button
             class="text-xl border-black/30 border-2 z-[999] absolute right-0 top-0 mt-2 mr-2 px-2 aspect-square rounded transition ease-in-out duration-150"
             :class="trackLocation ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-200'"

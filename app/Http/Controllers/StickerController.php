@@ -38,12 +38,12 @@ class StickerController extends Controller
         $sticker->user()->associate(Auth::user());
         $sticker->save();
 
-        return to_route('stickers.show');
+        return to_route('home');
     }
 
     public function delete(Sticker $sticker) {
         if ($sticker->user != Auth::user()) abort(403, 'Jij hebt deze sticker niet geplakt');
         $sticker->delete();
-        return to_route('stickers.show');
+        return to_route('home');
     }
 }

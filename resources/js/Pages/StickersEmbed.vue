@@ -9,8 +9,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Stickers" />
-    <div class="w-full h-screen">
+    <div class="w-full h-screen flex flex-col">
                     <MapView :stickers="stickers"/>
     </div>
 </template>
