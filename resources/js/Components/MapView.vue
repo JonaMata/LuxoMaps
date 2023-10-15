@@ -1,9 +1,26 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css'
-import L, {Marker, Map as LeafletMap, Circle, FeatureGroup, LatLngTuple, LatLng} from 'leaflet'
+import 'leaflet-geosearch/dist/geosearch.css'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+import L, {
+    Marker,
+    Map as LeafletMap,
+    Circle,
+    FeatureGroup,
+    LatLngTuple,
+    LatLng,
+    TileLayer,
+    Popup,
+    DivIcon,
+    Point, Icon
+} from 'leaflet'
 import {onMounted, Ref, ref, watch, watchEffect} from "vue";
 import {router, usePage} from "@inertiajs/vue3";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
+// @ts-ignore
+import {GeoSearchControl, OpenStreetMapProvider} from "leaflet-geosearch";
+import "leaflet"
+import "leaflet.markercluster"
 
 const page = usePage()
 
@@ -14,17 +31,27 @@ const props = defineProps<{
 
 const trackLocation = ref(false)
 
-const stickerMarkers: Ref<Array<Marker>> = ref([])
-
 let map : LeafletMap;
 
 let locationMarker : Marker, accuracyCircle : Circle, curLocGroup : FeatureGroup
 let currentLocation = ref()
 
+const markers : any = L.markerClusterGroup({
+    animateAddingMarkers: true,
+    iconCreateFunction: (cluster : any) => {
+        const childCount = cluster.getChildCount()
+        return new DivIcon({
+            html: '<div><span>' + childCount + '</span></div>',
+            className: 'cluster-icon',
+            iconSize: new Point(32, 32, true),
+        })
+    }
+})
+
 let shouldPan = false;
 
 //Define LuxoIcon
-const LuxoIcon = new L.Icon({
+const LuxoIcon = new Icon({
     iconUrl: '/luxomarker.png',
     iconSize: [32, 32],
     iconAnchor: [16, 16],
@@ -32,24 +59,26 @@ const LuxoIcon = new L.Icon({
 })
 
 onMounted(() => {
-    map = L.map('map').setView([52.22224319001547, 6.895161306827223], 13)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    map = new LeafletMap('map').setView([52.22224319001547, 6.895161306827223], 13)
+    new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map)
 
+    markers.addTo(map)
 
     //Default marker
-    const moodMarker = L.marker([52.22224319001547, 6.895161306827223]).setIcon(LuxoIcon).addTo(map)
+    const moodMarker = new Marker([52.22224319001547, 6.895161306827223]).setIcon(LuxoIcon).addTo(map)
 
     moodMarker.bindPopup('Mood')
 
-
-    props.stickers.forEach((sticker) => stickerMarkers.value.push(placeSticker(sticker)))
+    const newMarkers : Marker[] = []
+    props.stickers.forEach((sticker) => newMarkers.push(placeSticker(sticker)))
+    markers.addLayers(newMarkers)
 
     //Map click
     if (props.canEdit) {
-        const newStickerPopup = L.popup({
+        const newStickerPopup = new Popup({
             content:
                 '<button ' +
                 'id="stickerButton" ' +
@@ -70,22 +99,33 @@ onMounted(() => {
         })
     }
 
-    locationMarker = L.marker([0,0])
-    accuracyCircle = L.circle([0,0])
-    curLocGroup = L.featureGroup([locationMarker, accuracyCircle])
+    locationMarker = new Marker([0,0])
+    accuracyCircle = new Circle([0,0])
+    curLocGroup = new FeatureGroup([locationMarker, accuracyCircle])
 
 
     watch(() => props.stickers, (stickers, prevStickers) => {
-        stickerMarkers.value.forEach((marker) => {
-            marker.remove()
-        })
-        stickerMarkers.value = []
-        stickers.forEach((sticker) => stickerMarkers.value.push(placeSticker(sticker)))
-        console.log(stickerMarkers.value)
+        markers.clearLayers()
+        const newMarkers : Marker[] = []
+        let newestMarker : Marker | undefined
+
+        stickers.forEach((sticker) => newMarkers.push(placeSticker(sticker)))
         if (stickers.length > prevStickers.length) {
-            stickerMarkers.value[stickerMarkers.value.length - 1].openPopup()
+            newestMarker = newMarkers.pop()
+        }
+        markers.addLayers(newMarkers)
+        if (newestMarker) {
+            markers.addLayer(newestMarker).openPopup()
         }
     })
+
+    const search = new GeoSearchControl({
+        provider: new OpenStreetMapProvider(),
+        style: 'bar',
+        notFoundMessage: 'Geen resultaten gevonden',
+    });
+
+    map.addControl(search);
 })
 
 
@@ -96,10 +136,10 @@ function postSticker(latLng : any) {
 }
 
 function placeSticker(sticker : any) {
-    const marker = L.marker([sticker.latitude, sticker.longitude]).setIcon(LuxoIcon)
+    const marker = new Marker([sticker.latitude, sticker.longitude]).setIcon(LuxoIcon)
     let popupContent = 'Geplakt door ' + sticker.owner;
     if (props.canEdit && sticker.is_owner) {
-        const ownerPopup = L.popup().setLatLng([sticker.latitude, sticker.longitude]).setContent('Geplakt door jou!<br><br><button id="sticker-' + sticker.id + '" ' +
+        const ownerPopup = new Popup().setLatLng([sticker.latitude, sticker.longitude]).setContent('Geplakt door jou!<br><br><button id="sticker-' + sticker.id + '" ' +
             'class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150" ' +
             '>Verwijderen</button>')
 
@@ -117,7 +157,7 @@ function placeSticker(sticker : any) {
     } else {
         marker.bindPopup(popupContent)
     }
-    return marker.addTo(map)
+    return marker
 }
 
 function updateCurrentPosition(location : GeolocationPosition) {
@@ -181,5 +221,19 @@ async function toggleLocation() {
 #map {
     width: 100%;
     height: 100%;
+}
+</style>
+
+<style>
+.cluster-icon {
+    background: linear-gradient(0, rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/luxomarker.png');
+    border-radius: 50%;
+    background-size: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.5em;
 }
 </style>
