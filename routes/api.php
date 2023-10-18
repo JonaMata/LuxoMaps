@@ -18,4 +18,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('{peertje}/location', [\App\Http\Controllers\PeertjesController::class, 'postLocation'])->name('peertjes.location.post');
+Route::post('peertjes/{peertje}/location', [\App\Http\Controllers\PeertjesController::class, 'postLocation'])->name('peertjes.location.post');
