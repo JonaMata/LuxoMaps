@@ -30,6 +30,9 @@ Route::middleware('auth')->group(function () {
             Route::post('', 'create')->name('create');
             Route::delete('{sticker}', 'delete')->name('delete');
         });
+        Route::prefix('peertjes')->name('peertjes.')->controller(\App\Http\Controllers\PeertjesController::class)->group(function() {
+            Route::get('', 'show')->name('show');
+        });
     });
 });
 

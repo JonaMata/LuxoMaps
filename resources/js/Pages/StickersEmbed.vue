@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import MapView from "@/Components/MapView.vue";
+import StickerMapView from "@/Components/StickerMapView.vue";
 
 defineProps<{
     stickers: any,
@@ -10,6 +10,6 @@ defineProps<{
 
 <template>
     <div class="w-full h-screen flex flex-col">
-                    <MapView :stickers="stickers"/>
+                    <StickerMapView :stickers="stickers"/>
     </div>
 </template>

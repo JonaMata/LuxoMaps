@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import StickerMapView from "@/Components/StickerMapView.vue";
+import MapView from "@/Components/StickerMapView.vue";
+import PeertjesMapView from "@/Components/PeertjesMapView.vue";
 
 defineProps<{
-    stickers: Array<object>,
+    peertjes: Array<object>,
 }>()
 </script>
 
 <template>
 
     <AuthenticatedLayout>
-                    <StickerMapView :stickers="stickers" :can-edit="!!$page.props.auth.user"/>
+                    <PeertjesMapView :peertjes="peertjes"/>
     </AuthenticatedLayout>
 </template>
