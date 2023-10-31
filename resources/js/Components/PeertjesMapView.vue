@@ -13,7 +13,7 @@ import L, {
     TileLayer,
     Popup,
     DivIcon,
-    Point, Icon, CircleMarker
+    Point, Icon, CircleMarker, Polyline
 } from 'leaflet'
 import {onMounted, Ref, ref, watch, watchEffect} from "vue";
 import {router, usePage} from "@inertiajs/vue3";
@@ -22,6 +22,11 @@ import {GeoSearchControl, OpenStreetMapProvider} from "leaflet-geosearch";
 import "leaflet"
 import "leaflet.markercluster"
 import moment from "moment";
+
+interface Location {
+    latitude: number,
+    longitude: number,
+}
 
 moment().locale('nl')
 
@@ -34,7 +39,8 @@ const props = defineProps<{
 const trackLocation = ref(false)
 
 
-const peertjeMarkers: Array<Ref<Array<Marker>>> = props.peertjes.map((peertje) => ref([]));
+const peertjeMarkers: Array<Ref<Array<Marker | CircleMarker>>> = props.peertjes.map((peertje) => ref([]));
+const peertjeLines: Array<Ref<Polyline | undefined>> = props.peertjes.map((peertje) => ref());
 
 let map : LeafletMap;
 
@@ -43,13 +49,6 @@ let currentLocation = ref()
 
 let shouldPan = false;
 
-//Define LuxoIcon
-// const LuxoIcon = new Icon({
-//     iconUrl: '/luxomarker.png',
-//     iconSize: [32, 32],
-//     iconAnchor: [16, 16],
-//     popupAnchor: [0, 0],
-// })
 const LuxoIcon = new DivIcon({
     className: 'peertje-icon pulsing',
     html: '💡',
@@ -66,10 +65,10 @@ onMounted(() => {
     }).addTo(map)
 
     props.peertjes.forEach((peertje, peertjeIndex) => {
-        let lineLocs = []
-        peertje.locations.forEach((location) => lineLocs.push([location.latitude, location.longitude]))
-        L.polyline(lineLocs, {color: 'blue'}).addTo(map)
-        peertje.locations.forEach((location, locationIndex) => peertjeMarkers[peertjeIndex].value.push(placeMarker(peertje, location, 0==locationIndex)))
+        let lineLocs : Array<LatLng> = []
+        peertje.locations.forEach((location: Location) => lineLocs.push(new LatLng(location.latitude, location.longitude)))
+        peertjeLines[peertjeIndex].value = L.polyline(lineLocs, {color: 'blue'}).addTo(map)
+        peertje.locations.forEach((location: Location, locationIndex: number) => peertjeMarkers[peertjeIndex].value.push(placeMarker(peertje, location, 0==locationIndex)))
     })
 
 
@@ -79,36 +78,44 @@ onMounted(() => {
 
 
     watch(() => props.peertjes, (peertjes, prevPeertjes) => {
-        markers.clearLayers()
-        let newestMarker : Marker | undefined
-
         peertjes.forEach((peertje, peertjeIndex) => {
+            if (peertje.locations.length == prevPeertjes[peertjeIndex].locations.length) return;
             peertjeMarkers[peertjeIndex].value.forEach((marker) => {
                 marker.remove()
             })
+            peertjeLines[peertjeIndex].value?.remove();
+
             peertjeMarkers[peertjeIndex].value = []
 
-            peertje.locations.forEach((location, locationIndex: number) => {
+            peertje.locations.forEach((location: Location, locationIndex: number) => {
                 peertjeMarkers[peertjeIndex].value.push(placeMarker(peertje, location, 0==locationIndex))
             })
+            const lineLocs : Array<LatLng> = peertje.locations.map((loc: Location) => new LatLng(loc.latitude, loc.longitude))
+            peertjeLines[peertjeIndex].value = L.polyline(lineLocs, {color: 'blue'}).addTo(map) as Polyline
 
 
             if (peertje.locations.length > prevPeertjes[peertjeIndex].locations.length) {
-                peertjeMarkers[peertjeIndex].value[peertje.locations.length - 1].openPopup()
+                peertjeMarkers[peertjeIndex].value[0].openPopup()
             }
         })
-
     })
+
+    setInterval(() => {
+        router.reload({
+          only: ['peertjes'],
+        })
+    }, 2000);
 })
 
-function placeMarker(peertje, location : any, newest: boolean = false) {
-    let marker = new CircleMarker([location.latitude, location.longitude], {radius: 4})
+function placeMarker(peertje: any, location : any, newest: boolean = false) {
+    let marker: Marker | CircleMarker;
+    marker = new CircleMarker([location.latitude, location.longitude], {radius: 4})
     if (newest) {
         marker = new Marker([location.latitude, location.longitude])
         marker.setIcon(LuxoIcon)
     }
     const time = moment(location.created_at)
-    let popupContent = 'Peertje ' + peertje.name + '<br>om ' + time.format('HH:mm:ss') + '<br>' + time.fromNow()
+    let popupContent = 'Peertje ' + peertje.name + '<br>om ' + time.format('HH:mm:ss') + '<br>' + time.fromNow() + '<br>🔋' + location.battery_percentage + '%';
     marker.bindPopup(popupContent)
 
     return marker.addTo(map)
@@ -168,13 +175,21 @@ async function toggleLocation() {
             :class="trackLocation ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-200'"
             @click="toggleLocation">&target;
         </button>
+
+        <div class="text-xl border-black/30 border-2 z-[999] absolute left-0 bottom-0 m-2 px-2 rounded bg-white">
+            <ul>
+                <li v-for="peertje in props.peertjes" :key="peertje.id">
+                    {{ peertje.locations[0].battery_percentage < 20 ? '🪫' : '🔋'}}{{ peertje.locations[0].battery_percentage ?? 'unknown' }}% {{ peertje.name }}
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
 <style scoped>
 #map {
     width: 100%;
-    height: 100%;
+    height: -webkit-fill-available;
 }
 </style>
 

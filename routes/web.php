@@ -32,6 +32,9 @@ Route::middleware('auth')->group(function () {
         });
         Route::prefix('peertjes')->name('peertjes.')->controller(\App\Http\Controllers\PeertjesController::class)->group(function() {
             Route::get('', 'show')->name('show');
+            Route::get('list', 'list')->name('list');
+            Route::post('create', 'create')->name('create');
+            Route::post('destroy', 'destroy')->name('destroy');
         });
     });
 });

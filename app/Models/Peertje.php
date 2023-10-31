@@ -12,7 +12,7 @@ class Peertje extends Model
     protected $appends = ['locations'];
 
     public function locations() {
-        return $this->hasMany(PeertjeLocation::class);
+        return $this->hasMany(PeertjeLocation::class)->where('created_at', '>', now()->subDays(7));
     }
 
     function getLocationsAttribute() {
