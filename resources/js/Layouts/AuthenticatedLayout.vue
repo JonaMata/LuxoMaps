@@ -1,11 +1,43 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import {Link, usePage} from '@inertiajs/vue3';
+import {useCan} from "@/Composables/useCan";
+
+const { can } = useCan();
+
+interface MenuItem {
+    name: string,
+    route: string,
+    condition: boolean,
+}
+
+const menuItems = [
+    {
+        name: 'Home',
+        route: 'home',
+        condition: true,
+    },
+    {
+        name: 'Peertjes',
+        route: 'peertjes.show',
+        condition: can('view-peertjes'),
+    },
+    {
+        name: 'Manage peertjes',
+        route: 'peertjes.list',
+        condition: can('manage-peertjes'),
+    },
+    {
+        name: 'Roles',
+        route: 'roles.index',
+        condition: can('manage-roles'),
+    },
+]
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -29,6 +61,12 @@ const showingNavigationDropdown = ref(false);
                                     </div>
                                 </Link>
                             </div>
+                        </div>
+
+                        <div class="hidden sm:flex sm:items-center sm:ml-6">
+                            <template v-for="menuItem in menuItems" :key="menuItem.route">
+                                <NavLink :active="route().current() === menuItem.route" v-if="menuItem.condition" :href="route(menuItem.route)">{{ menuItem.name }}</NavLink>
+                            </template>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -121,6 +159,9 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
 
+                    <template v-for="menuItem in menuItems" :key="menuItem.route">
+                        <ResponsiveNavLink :active="route().current() === menuItem.route" v-if="menuItem.condition" :href="route(menuItem.route)">{{ menuItem.name }}</ResponsiveNavLink>
+                    </template>
                     <!-- Responsive Settings Options -->
                     <div v-if="$page.props.auth.user" class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
@@ -131,7 +172,7 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
+                            <ResponsiveNavLink :active="route().current() === 'profile.edit'" :href="route('profile.edit')"> Profile </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>

@@ -36,6 +36,15 @@ Route::middleware('auth')->group(function () {
             Route::post('create', 'create')->name('create');
             Route::post('destroy', 'destroy')->name('destroy');
         });
+
+        //Role routes
+        Route::resource('roles', \App\Http\Controllers\RoleController::class);
+        Route::prefix('roles')->name('roles.')->middleware('can:manage-roles')->controller(\App\Http\Controllers\RoleController::class)->group(function() {
+            Route::get('{role}/assign/{user}', 'assign')->name('assign');
+            Route::get('{role}/revoke/{user}', 'revoke')->name('revoke');
+        });
+
+        Route::resource('permissions', \App\Http\Controllers\PermissionController::class);
     });
 });
 
