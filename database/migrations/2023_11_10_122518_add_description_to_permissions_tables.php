@@ -18,11 +18,11 @@ return new class extends Migration
         }
 
         Schema::table($tableNames['permissions'], function (Blueprint $table) {
-            $table->string('description');
+            $table->string('description')->nullable();
         });
 
         Schema::table($tableNames['roles'], function (Blueprint $table) {
-            $table->string('description');
+            $table->string('description')->nullable();
         });
     }
 

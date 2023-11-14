@@ -10,6 +10,7 @@ declare namespace App.Models {
         name: string;
         created_at: string | null;
         updated_at: string | null;
+        api_id: number | null;
         locations?: Array<App.Models.PeertjeLocation> | null;
         locations_count?: number | null;
         readonly locations?: any;
@@ -45,7 +46,7 @@ declare namespace App.Models {
         guard_name: string;
         created_at: string | null;
         updated_at: string | null;
-        description: string;
+        description: string | null;
         permissions?: Array<App.Models.Permission> | null;
         users?: Array<App.Models.User> | null;
         permissions_count?: number | null;
@@ -59,7 +60,7 @@ declare namespace App.Models {
         guard_name: string;
         created_at: string | null;
         updated_at: string | null;
-        description: string;
+        description: string | null;
         roles?: Array<App.Models.Role> | null;
         users?: Array<App.Models.User> | null;
         permissions?: Array<App.Models.Permission> | null;

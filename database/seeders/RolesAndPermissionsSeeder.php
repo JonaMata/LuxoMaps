@@ -14,6 +14,7 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create permissions
+        Permission::findOrCreate('place-stickers')->update(['description' => 'Place stickers']);
         Permission::findOrCreate('view-roles')->update(['description' => 'View roles']);
         Permission::findOrCreate('manage-roles')->update(['description' => 'Manage roles']);
         Permission::findOrCreate('view-permissions')->update(['description' => 'View permissions']);
@@ -26,12 +27,30 @@ class RolesAndPermissionsSeeder extends Seeder
         $admin->givePermissionTo(
             Permission::all()
         );
+
+        $peertje = Role::findOrCreate('peertje');
+        $peertje->update(['description' => 'Peertje']);
+        $peertje->givePermissionTo([
+            'place-stickers',
+        ]);
+
         $lid = Role::findOrCreate('lid');
         $lid->update(['description' => 'Lid']);
         $lid->givePermissionTo([
-            'view-roles',
-            'view-permissions',
-            'view-peertjes',
+            $peertje->permissions->pluck('name')->merge([
+                'view-roles',
+                'view-permissions',
+                'view-peertjes',
+            ])
+        ]);
+
+        $praesidium = Role::findOrCreate('praesidium');
+        $praesidium->update(['description' => 'Praesidium']);
+        $praesidium->givePermissionTo([
+            $lid->permissions->pluck('name')->merge([
+                'manage-roles',
+                'manage-peertjes',
+            ]),
         ]);
     }
 }

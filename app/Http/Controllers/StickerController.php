@@ -26,6 +26,8 @@ class StickerController extends Controller
     }
 
     public function create(Request $request) {
+        $this->authorize('create', Sticker::class);
+
         $validated = $request->validate([
             'lat' => ['required', 'numeric', 'min:-90', 'max:90'],
             'lng' => ['required', 'numeric', 'min:-180', 'max:180'],
@@ -42,7 +44,7 @@ class StickerController extends Controller
     }
 
     public function delete(Sticker $sticker) {
-        if ($sticker->user != Auth::user()) abort(403, 'Jij hebt deze sticker niet geplakt');
+        $this->authorize('delete', $sticker);
         $sticker->delete();
         return to_route('home');
     }

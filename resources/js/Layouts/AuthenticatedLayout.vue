@@ -24,7 +24,7 @@ const menuItems = [
     },
     {
         name: 'Peertjes',
-        route: 'peertjes.show',
+        route: 'peertjes.index',
         condition: can('view-peertjes'),
     },
     {

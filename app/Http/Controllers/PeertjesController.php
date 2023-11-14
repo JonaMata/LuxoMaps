@@ -10,8 +10,7 @@ use Inertia\Inertia;
 
 class PeertjesController extends Controller
 {
-
-    public function show() {
+    public function index() {
         $this->authorize('viewAny', Peertje::class);
 
         $peertjes = Peertje::query()->whereHas('locations', function ($query) {
@@ -21,6 +20,28 @@ class PeertjesController extends Controller
         return Inertia::render('Peertjes', [
             'peertjes' => $peertjes,
         ]);
+    }
+
+    public function show(Peertje $peertje) {
+        $this->authorize('update', $peertje);
+
+
+        return Inertia::render('Peertjes/Show', [
+            'peertje' => $peertje,
+        ]);
+    }
+
+    public function update(Request $request, Peertje $peertje) {
+        $this->authorize('update', $peertje);
+
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'api_id' => 'integer|between:0,7|unique:peertjes',
+        ]);
+
+        $peertje->update($validated);
+
+        return redirect()->back();
     }
 
     public function list() {
@@ -40,13 +61,13 @@ class PeertjesController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string',
+            'api_id' => 'integer|between:0,7|unique:peertjes',
         ]);
 
-        $peertje = new Peertje();
-        $peertje->name = $validated['name'];
+        $peertje = new Peertje($validated);
         $peertje->save();
 
-        return redirect()->route('peertjes.list');
+        return redirect()->back();
     }
 
     public function destroy(Request $request) {

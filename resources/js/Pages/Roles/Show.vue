@@ -6,11 +6,19 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
+import {onMounted} from "vue";
 
 const props = defineProps<{
     role: App.Models.Role,
     users: null | App.Models.User[],
 }>();
+
+onMounted(() => {
+    console.log(props.role);
+    console.log(props.users);
+});
+
+console.log(props.users);
 </script>
 
 <template>

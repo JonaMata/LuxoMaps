@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,7 @@ class Sticker extends Model
 
     protected $fillable = ['latitude', 'longitude'];
 
-    protected $appends = ['owner', 'is_owner'];
+    protected $appends = ['owner', 'is_owner', 'is_peertje'];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -24,6 +25,15 @@ class Sticker extends Model
     }
 
     public function getIsOwnerAttribute() {
-        return Auth::check() && Auth::user() == $this->user;
+        return Auth::check() && Auth::user()->id == $this->user->id;
+    }
+
+    public function isPeertje() : Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return $this->user->hasRole('peertje');
+            }
+        );
     }
 }

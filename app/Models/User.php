@@ -45,7 +45,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
 
-    protected $appends = ['assigned_roles', 'assigned_permissions'];
 
     public function getAssignedRolesAttribute() : array
     {
