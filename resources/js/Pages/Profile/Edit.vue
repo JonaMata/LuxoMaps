@@ -4,10 +4,12 @@ import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
+import RolesInfo from "@/Pages/Profile/Partials/RolesInfo.vue";
 
 defineProps<{
     mustVerifyEmail?: boolean;
     status?: string;
+    roles?: App.Models.Role[];
 }>();
 </script>
 
@@ -31,6 +33,10 @@ defineProps<{
 
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <UpdatePasswordForm class="max-w-xl" />
+                </div>
+
+                <div v-if="roles" class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                    <RolesInfo :roles="roles" class="max-w-xl" />
                 </div>
 
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">

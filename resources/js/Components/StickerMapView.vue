@@ -21,11 +21,12 @@ import {router, usePage} from "@inertiajs/vue3";
 import {GeoSearchControl, OpenStreetMapProvider} from "leaflet-geosearch";
 import "leaflet"
 import "leaflet.markercluster"
+import Sticker = App.Models.Sticker;
 
 const page = usePage()
 
 const props = defineProps<{
-    stickers: Array<any>,
+    stickers: App.Models.Sticker[],
     canEdit?: boolean,
 }>()
 
@@ -53,6 +54,14 @@ let shouldPan = false;
 //Define LuxoIcon
 const LuxoIcon = new Icon({
     iconUrl: '/luxomarker.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, 0],
+})
+
+const PeertjeIcon = new DivIcon({
+    className: 'peertje-icon',
+    html: '💡',
     iconSize: [32, 32],
     iconAnchor: [16, 16],
     popupAnchor: [0, 0],
@@ -135,9 +144,12 @@ function postSticker(latLng : any) {
     });
 }
 
-function placeSticker(sticker : any) {
-    const marker = new Marker([sticker.latitude, sticker.longitude]).setIcon(LuxoIcon)
-    let popupContent = 'Geplakt door ' + sticker.owner;
+function placeSticker(sticker : App.Models.Sticker) {
+    console.log(sticker)
+    const icon = sticker.is_peertje ? PeertjeIcon : LuxoIcon;
+
+    const marker = new Marker([sticker.latitude, sticker.longitude]).setIcon(icon)
+    let popupContent = 'Geplakt door ' + (sticker.is_peertje ? 'Peertje ' : '') + sticker.owner;
     if (props.canEdit && sticker.is_owner) {
         const ownerPopup = new Popup().setLatLng([sticker.latitude, sticker.longitude]).setContent('Geplakt door jou!<br><br><button id="sticker-' + sticker.id + '" ' +
             'class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150" ' +
@@ -210,7 +222,7 @@ async function toggleLocation() {
     <div class="relative grow flex flex-col">
         <div id="map" class="grow"></div>
         <button
-            class="text-xl border-black/30 border-2 z-[999] absolute right-0 top-0 mt-2 mr-2 px-2 aspect-square rounded transition ease-in-out duration-150"
+            class="text-xl border-black/30 border-2 leaflet-top absolute right-0 top-0 mt-2 mr-2 px-2 aspect-square rounded transition ease-in-out duration-150"
             :class="trackLocation ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-200'"
             @click="toggleLocation">&target;
         </button>
@@ -235,5 +247,11 @@ async function toggleLocation() {
     color: white;
     font-weight: bold;
     font-size: 1.5em;
+}
+
+.peertje-icon {
+    font-size: 32px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
 }
 </style>

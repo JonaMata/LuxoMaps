@@ -1,20 +1,29 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, router, useForm} from '@inertiajs/vue3';
+import {Head, Link, router, useForm} from '@inertiajs/vue3';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import Modal from "@/Components/Modal.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 
 defineProps<{
-    peertjes: any
+    peertjes: App.Models.Peertje[],
 }>();
+
+onMounted(() => {
+    router.reload({
+        only: ['peertjes'],
+        preserveScroll: true
+    });
+});
 
 const newPeertjeForm = useForm({
     name: '',
+    api_id: null as number | null
 });
 
 const createPeertje = () => {
@@ -22,7 +31,10 @@ const createPeertje = () => {
         preserveScroll: true,
         onSuccess: () => {
             newPeertjeForm.reset();
-            router.reload();
+            router.reload({
+                only: ['peertjes'],
+                preserveScroll: true
+            });
         },
     });
 };
@@ -64,9 +76,22 @@ const deletePeertje = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">Peertjes</h2>
                 <form @submit.prevent="createPeertje">
-                    <div class="flex space-x-4">
-                        <TextInput v-model="newPeertjeForm.name" placeholder="Ries" class="w-full"/>
-                        <PrimaryButton :disabled="newPeertjeForm.processing">Nieuw peertje</PrimaryButton>
+                    <div class="flex space-x-4 items-end">
+                        <div>
+                            <InputLabel for="name">Naam</InputLabel>
+                            <TextInput id="name" v-model="newPeertjeForm.name" placeholder="Ries" class="w-full"/>
+                            <InputError :message="newPeertjeForm.errors.name" class="mt-2"/>
+                        </div>
+                        <div>
+                            <InputLabel for="api_id">API ID</InputLabel>
+                            <TextInput id="api_id" v-model="newPeertjeForm.api_id" type="number" min="0" max="7"
+                                       step="1"
+                                       placeholder="0" class="w-full"/>
+                            <InputError :message="newPeertjeForm.errors.api_id" class="mt-2"/>
+                        </div>
+                        <div>
+                            <PrimaryButton :disabled="newPeertjeForm.processing">Nieuw peertje</PrimaryButton>
+                        </div>
                     </div>
                     <InputError :message="newPeertjeForm.errors.name" class="mt-2"/>
                 </form>
@@ -75,16 +100,18 @@ const deletePeertje = () => {
                         <thead class="text-left">
                         <tr>
                             <th>Naam</th>
-                            <th>ID</th>
+                            <th>API ID</th>
                             <th>Verwijderen</th>
                         </tr>
                         </thead>
                         <tr v-for="peertje in peertjes">
                             <td>
-                                {{ peertje.name }}
+                                <Link :href="route('peertjes.show', {peertje: peertje.id})">
+                                    {{ peertje.name }}
+                                </Link>
                             </td>
                             <td>
-                                {{ peertje.id }}
+                                {{ peertje.api_id }}
                             </td>
                             <td>
                                 <DangerButton @click="() => openDeleteModal(peertje)">Verwijderen</DangerButton>
