@@ -7,7 +7,7 @@ import {useCan} from "@/Composables/useCan";
 const { can } = useCan();
 
 defineProps<{
-    stickers: Array<object>,
+    stickers: App.Models.Sticker[],
 }>()
 </script>
 
