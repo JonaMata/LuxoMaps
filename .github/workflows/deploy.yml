@@ -16,7 +16,7 @@ jobs:
     env:
       BUILD_SOURCE_DIR: .
       BUILD_ARTIFACT_STAGING_DIR: build/
-      HOST_SERVER: ftp.maps.luxovi.us
+      HOST_SERVER: ftp.luxovi.us
     steps:
       - name: 🛎️ Checkout project
         uses: actions/checkout@v3
