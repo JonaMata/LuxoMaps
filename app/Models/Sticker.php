@@ -20,20 +20,18 @@ class Sticker extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getOwnerAttribute() {
+    public function getOwnerAttribute()
+    {
         return $this->user->name;
     }
 
-    public function getIsOwnerAttribute() {
+    public function getIsOwnerAttribute()
+    {
         return Auth::check() && Auth::user()->id == $this->user->id;
     }
 
-    public function isPeertje() : Attribute
+    public function getIsPeertjeAttribute()
     {
-        return Attribute::make(
-            get: function () {
-                return $this->user->hasRole('peertje');
-            }
-        );
+        return $this->user->hasRole('peertje');
     }
 }

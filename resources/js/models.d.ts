@@ -79,6 +79,7 @@ declare namespace App.Models {
         user?: App.Models.User | null;
         readonly owner?: any;
         readonly is_owner?: any;
+        readonly is_peertje?: any;
     }
 
 }
