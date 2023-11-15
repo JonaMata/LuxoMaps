@@ -53,6 +53,9 @@ jobs:
       - name: 🗑️ Remove storage directory
         run: rm -rf storage
 
+      - name: 🗑️ Remove node_modules directory
+        run: rm -rf node_modules
+
       - name: 📁 Create build directory
         run: mkdir ${{ env.BUILD_ARTIFACT_STAGING_DIR }}
 
