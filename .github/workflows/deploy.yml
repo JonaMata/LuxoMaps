@@ -26,6 +26,9 @@ jobs:
         with:
           php-version: 8.1
 
+      - name: 📁 Copy .env
+        run: cp .env.example .env
+
       - name: 📥 Install back-end dependencies
         run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
@@ -43,10 +46,10 @@ jobs:
 
       - name: 🗑️ Remove storage directory
         run: rm -rf storage
-        
+
       - name: 📁 Create build directory
         run: mkdir ${{ env.BUILD_ARTIFACT_STAGING_DIR }}
-          
+
       - name: 🗄️ ZIP Build
         uses: TheDoctor0/zip-release@0.6.1
         with:
