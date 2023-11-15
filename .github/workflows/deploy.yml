@@ -32,6 +32,12 @@ jobs:
       - name: 📥 Install back-end dependencies
         run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
+      - name: 🔨 Run database migrations
+        run: php artisan migrate --force
+
+      - name: 🔨 Create typescript model types
+        run: php artisan typescript:generate
+
       - name: 🖱️ Set Node v18
         uses: actions/setup-node@v3
         with:
@@ -41,7 +47,7 @@ jobs:
       - name: 📥 Install front-end dependencies
         run: npm ci --ignore-scripts
 
-      - name: 🔨 build front-end
+      - name: 🔨 Build front-end
         run: npm run build
 
       - name: 🗑️ Remove storage directory
@@ -54,8 +60,7 @@ jobs:
         uses: TheDoctor0/zip-release@0.6.1
         with:
           filename: ${{ env.BUILD_ARTIFACT_STAGING_DIR }}build.zip
-          path: ${{ env.BUILD_SOURCE_DIR }}
-          exclusions: 'storage/* build/* node_modules/*'
+          exclusions: 'storage/* build/* /*node_modules/* database.sqlite'
 
       - name: ➗ Calculate checksum
         run: openssl md5 ${{ env.BUILD_ARTIFACT_STAGING_DIR }}build.zip | cut -d" " -f2 > ${{ env.BUILD_ARTIFACT_STAGING_DIR }}checksum.txt
