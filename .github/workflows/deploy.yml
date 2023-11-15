@@ -27,7 +27,7 @@ jobs:
           php-version: 8.1
 
       - name: 📁 Copy .env
-        run: cp .env.example .env
+        run: cp .env.deploy .env
 
       - name: 📥 Install back-end dependencies
         run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
