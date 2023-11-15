@@ -15,7 +15,7 @@ import L, {
     DivIcon,
     Point, Icon, CircleMarker, Polyline
 } from 'leaflet'
-import {onMounted, Ref, ref, watch, watchEffect} from "vue";
+import {onMounted, onUnmounted, Ref, ref, watch, watchEffect} from "vue";
 import {router, usePage} from "@inertiajs/vue3";
 // @ts-ignore
 import {GeoSearchControl, OpenStreetMapProvider} from "leaflet-geosearch";
@@ -38,6 +38,7 @@ const props = defineProps<{
 
 const trackLocation = ref(false)
 
+let reloadInterval : number;
 
 const peertjeMarkers: Array<Ref<Array<Marker | CircleMarker>>> = props.peertjes.map((peertje) => ref([]));
 const peertjeLines: Array<Ref<Polyline | undefined>> = props.peertjes.map((peertje) => ref());
@@ -100,11 +101,15 @@ onMounted(() => {
         })
     })
 
-    setInterval(() => {
+    reloadInterval = setInterval(() => {
         router.reload({
           only: ['peertjes'],
         })
     }, 2000);
+})
+
+onUnmounted(() => {
+    clearInterval(reloadInterval)
 })
 
 function placeMarker(peertje: any, location : any, newest: boolean = false) {
