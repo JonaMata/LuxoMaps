@@ -15,6 +15,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            height: {
+                screen: ['100vh /* fallback for Opera, IE and etc. */', '100svh'],
+            },
+            minHeight: {
+                screen: ['100vh /* fallback for Opera, IE and etc. */', '100svh'],
+            },
         },
     },
 
