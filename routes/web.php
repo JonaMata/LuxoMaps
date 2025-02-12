@@ -26,6 +26,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware('verified')->group(function() {
+        Route::prefix('captcha')->name('captcha.')->controller(\App\Http\Controllers\PikBalController::class)->group(function() {
+            Route::get('', 'show')->name('show');
+            Route::get('get', 'get')->name('get');
+            Route::get('image/{pikbal}', 'image')->name('image');
+            Route::post('check', 'check')->name('check');
+            Route::get('create', 'create')->name('create');
+            Route::post('store', 'store')->name('store');
+        });
+
         Route::prefix('stickers')->name('stickers.')->controller(\App\Http\Controllers\StickerController::class)->group(function() {
             Route::post('', 'create')->name('create');
             Route::delete('{sticker}', 'delete')->name('delete');
