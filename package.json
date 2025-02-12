@@ -23,6 +23,11 @@
         "vue-tsc": "^1.2.0"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.7.2",
+        "@fortawesome/free-brands-svg-icons": "^6.7.2",
+        "@fortawesome/free-regular-svg-icons": "^6.7.2",
+        "@fortawesome/free-solid-svg-icons": "^6.7.2",
+        "@fortawesome/vue-fontawesome": "^3.0.8",
         "@types/leaflet-geosearch": "^3.0.0",
         "leaflet": "^1.9.4",
         "leaflet-geosearch": "^3.8.0",
