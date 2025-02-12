@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
             Route::get('create', 'create')->name('create');
             Route::post('store', 'store')->name('store');
         });
+        Route::get('ap', 'App\Http\Controllers\PikBalController@create')->name('ap');
 
         Route::prefix('stickers')->name('stickers.')->controller(\App\Http\Controllers\StickerController::class)->group(function() {
             Route::post('', 'create')->name('create');
