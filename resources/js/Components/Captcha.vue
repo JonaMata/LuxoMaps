@@ -72,7 +72,7 @@ const checkCaptcha = () => {
         </div>
         <div class="bg-blue-500 text-white m-2 p-4">
             <h2 class="text-sm">Selecteer alle afbeeldingen met</h2>
-            <h1 class="text-3xl font-bold">{{ checkValue == "pik" ? "pikken" : "ballen" }}</h1>
+            <h1 class="text-3xl font-bold">een {{ checkValue }}</h1>
         </div>
         <div class="grid grid-cols-3 grid-rows-3 m-2">
             <template v-for="(pikbal, index) in pikbals">
