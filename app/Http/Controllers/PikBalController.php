@@ -63,20 +63,20 @@ class PikBalController extends Controller
             'type' => 'required|in:pik,bal',
         ]);
 
-        $filePath = $request->file('pikbal')->storeAs('tmp', 'upload');
+//        $filePath = $request->file('pikbal')->storeAs('tmp', 'upload');
         try {
-            $image = Image::fromFile(storage_path('app/'.$filePath));
-            $image->resize(200, 200, Image::Cover);
-            $newPath = 'pikbals/'.str()->random(40);
-            $image->save(storage_path('app/'.$newPath), 80, Image::JPEG);
+//            $image = Image::fromFile(storage_path('app/'.$filePath));
+//            $image->resize(200, 200, Image::Cover);
+//            $newPath = 'pikbals/'.str()->random(40);
+//            $image->save(storage_path('app/'.$newPath), 80, Image::JPEG);
 
             $pikBal = new PikBal();
-            $pikBal->path = $newPath;
+            $pikBal->path = $request->file('pikbal')->storeAs('pikbals', str()->random(40));
             $pikBal->filetype = $request->file('pikbal')->getMimeType();
             $pikBal->type = $request->type;
             $pikBal->save();
         } catch (\Exception $e) {
-            Storage::delete($filePath);
+//            Storage::delete($filePath);
             throw $e;
         }
 
