@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.1",
         "based/laravel-typescript": "^0.0.4",
+        "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.8",
         "laravel/framework": "^10.10",
@@ -39,6 +40,9 @@
         }
     },
     "scripts": {
+        "pre-autoload-dump": [
+            "Google\\Task\\Composer::cleanup",
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -58,7 +62,11 @@
             "dont-discover": [
                 "laravel/telescope"
             ]
-        }
+        },
+        "google/apiclient-services": [
+            "Drive",
+            "YouTube"
+        ]
     },
     "config": {
         "optimize-autoloader": true,

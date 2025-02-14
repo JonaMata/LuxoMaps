@@ -13,6 +13,7 @@
         <link rel="icon" href="/luxomarker.png" />
 
         <!-- Scripts -->
+        <script src="https://accounts.google.com/gsi/client?hl=nl" defer></script>
         @routes
         @vite(['resources/js/app.ts', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead

@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import GoogleLogin from "@/Components/GoogleLogin.vue";
 
 const form = useForm({
     name: '',
@@ -25,6 +26,8 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Register" />
+
+        <GoogleLogin type="signup" />
 
         <form @submit.prevent="submit">
             <div>
