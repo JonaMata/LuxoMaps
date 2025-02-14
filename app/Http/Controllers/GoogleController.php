@@ -21,6 +21,10 @@ class GoogleController extends Controller
 
         $payload = $client->verifyIdToken($request->input('credential'));
 
+        if (!$payload['email'].endsWith('@luxovi.us')) {
+            return redirect()->route('login')->with('status', 'You must use a @luxovi.us email address to sign in.');
+        }
+
         $user = User::updateOrCreate([
             'email' => $payload['email'],
         ], [
