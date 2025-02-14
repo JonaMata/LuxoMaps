@@ -7,6 +7,7 @@ const props = defineProps<{
 
 const button = ref();
 
+
 onMounted(() => {
     // @ts-ignore
     google.accounts.id.initialize({
@@ -15,7 +16,8 @@ onMounted(() => {
         autoselect: true,
         prompt_parent_id: 'google',
         context: props.type,
-        ux_mode: 'popup',
+        ux_mode: 'redirect',
+        login_uri: route('auth.google'),
         itp_support: true,
         hd: 'luxovi.us',
 
