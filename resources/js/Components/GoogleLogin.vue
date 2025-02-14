@@ -8,6 +8,7 @@ const props = defineProps<{
 const button = ref();
 
 onMounted(() => {
+    // @ts-ignore
     google.accounts.id.initialize({
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
         callback: route('auth.google'),
@@ -19,12 +20,14 @@ onMounted(() => {
         hd: 'luxovi.us',
 
     });
+    // @ts-ignore
     google.accounts.id.renderButton(button.value, {
         theme: 'outline',
         size: 'large',
         text: props.type === 'signup' ? 'signup_with' : 'signin_with',
         locale: 'nl_NL',
     });
+    // @ts-ignore
     google.accounts.id.prompt();
 })
 </script>
