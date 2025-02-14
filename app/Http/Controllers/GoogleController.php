@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Google\Client;
@@ -35,7 +36,9 @@ class GoogleController extends Controller
         $user->email_verified_at = now();
         $user->save();
 
-        Auth::login($user);
+        $user->assignRole(Role::query()->where('name', 'lid')->first());
+
+        Auth::login($user, true);
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
