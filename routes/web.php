@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +22,7 @@ Route::get('/', [\App\Http\Controllers\StickerController::class, 'show'])->name(
 
 Route::get('embed', [\App\Http\Controllers\StickerController::class, 'embed'])->name('stickers.embed');
 
+Route::post('/auth/google', 'App\Http\Controllers\GoogleController@oneTap')->name('auth.google');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
