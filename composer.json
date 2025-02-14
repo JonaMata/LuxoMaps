@@ -41,7 +41,7 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "Google\\Task\\Composer::cleanup",
+            "Google\\Task\\Composer::cleanup"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -64,8 +64,6 @@
             ]
         },
         "google/apiclient-services": [
-            "Drive",
-            "YouTube"
         ]
     },
     "config": {
